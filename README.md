@@ -1,13 +1,13 @@
-# TemplateFinder — Stage 2
+# TemplateFinder — Stage 3
 
-Stage 2 menambahkan backend serverless Vercel.
+Stage 3 menambahkan mesin pembentukan kandidat pencarian template.
 
 ## Struktur
 
 ```text
 template-finder/
 ├── api/
-│   └── analyze.js
+│   └── search.js
 ├── index.html
 ├── style.css
 ├── script.js
@@ -15,34 +15,35 @@ template-finder/
 └── README.md
 ```
 
-## Fitur Stage 2
+## Yang baru
 
-- Frontend mengirim URL ke `POST /api/analyze`.
-- Backend memvalidasi URL.
-- Backend mengenali TikTok, Instagram, YouTube, Facebook, dan X.
-- Response JSON dikirim kembali ke frontend.
-- Siap dijalankan sebagai Vercel Serverless Function.
+- `POST /api/search`
+- Deteksi platform dari hostname
+- Membuat search query otomatis
+- Menampilkan kandidat pencarian Google, YouTube, dan referensi CapCut
+- Tombol copy query
+- UI hasil pencarian kandidat
 
-## Deploy ke Vercel
+## Batasan penting
 
-1. Upload isi folder ini ke repository GitHub.
-2. Import repository tersebut ke Vercel.
-3. Pastikan Root Directory adalah root repository.
-4. Tidak perlu build command untuk frontend static sederhana ini.
-5. Deploy.
+Stage 3 belum mengklaim menemukan template secara otomatis dari isi video.
+URL media sosial tidak selalu memberikan akses ke video, audio, caption, atau metadata lengkap.
+Pencocokan video-ke-template yang benar-benar otomatis memerlukan sumber data/API yang sah dan,
+untuk tingkat akurasi tinggi, analisis frame/audio pada media yang memang boleh diproses.
 
-## Uji API
+## Deploy
 
-Endpoint:
+Upload isi folder ke root repository GitHub lalu import repository ke Vercel.
+Pastikan `index.html` berada di root dan `api/search.js` berada di folder `api`.
 
-`POST /api/analyze`
+## Endpoint
 
-Body:
+`POST /api/search`
 
 ```json
 {
-  "url": "https://www.tiktok.com/"
+  "url": "https://www.tiktok.com/@user/video/123"
 }
 ```
 
-Stage 2 belum mengambil atau mengunduh video. Mesin pencarian template asli akan dibuat pada Stage 3 dengan metode/API yang sesuai aturan platform.
+Tidak membutuhkan API key untuk mode kandidat pencarian ini.

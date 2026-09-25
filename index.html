@@ -3,78 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TemplateFinder — AI Template Discovery</title>
+  <title>TemplateFinder — Template Search Engine</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header">
-    <div class="brand">TemplateFinder <span>BETA</span></div>
-    <a href="#how" class="header-link">Cara kerja</a>
-  </header>
+<header class="header">
+  <div class="brand">TemplateFinder <span>STAGE 3</span></div>
+  <a href="#how">Cara kerja</a>
+</header>
 
-  <main>
-    <section class="hero">
-      <div class="badge">✦ AI TEMPLATE DISCOVERY</div>
-      <h1>Temukan template<br><span>di balik sebuah video.</span></h1>
-      <p class="subtitle">
-        Masukkan link video dari TikTok, Instagram, YouTube, Facebook, atau X.
-        Backend akan menganalisis URL dan menyiapkan hasil pencarian template.
-      </p>
+<main>
+<section class="hero">
+  <div class="badge">✦ TEMPLATE SEARCH ENGINE</div>
+  <h1>Temukan kandidat template<br><span>dari sebuah video.</span></h1>
+  <p class="subtitle">
+    Masukkan link video. TemplateFinder akan membaca platform dan metadata yang tersedia,
+    lalu membuat kandidat pencarian template yang relevan.
+  </p>
 
-      <form id="finderForm" class="search-box">
-        <input id="videoUrl" type="url" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off" required>
-        <button id="findBtn" type="submit">Cari Template <span>→</span></button>
-      </form>
+  <form id="finderForm" class="search-box">
+    <input id="videoUrl" type="url" placeholder="https://www.tiktok.com/@user/video/..." required>
+    <button id="findBtn" type="submit">Cari Template <span>→</span></button>
+  </form>
+  <p id="error" class="error"></p>
+</section>
 
-      <div class="platforms">
-        <span>TikTok</span><i>•</i><span>Instagram</span><i>•</i>
-        <span>YouTube</span><i>•</i><span>Facebook</span><i>•</i><span>X</span>
-      </div>
-      <p id="error" class="error"></p>
-    </section>
+<section id="scanner" class="scanner hidden">
+  <div class="section-label">SEARCHING CANDIDATES</div>
+  <div class="progress-wrap"><div id="progress"></div></div>
+  <div class="scan-steps">
+    <div class="scan-step active" data-step="1"><b>01</b><span>Validasi video</span></div>
+    <div class="scan-step" data-step="2"><b>02</b><span>Ambil metadata</span></div>
+    <div class="scan-step" data-step="3"><b>03</b><span>Bangun query template</span></div>
+  </div>
+</section>
 
-    <section id="scanner" class="scanner hidden">
-      <div class="section-label">ANALYZING VIDEO</div>
-      <div class="progress-wrap"><div id="progress" class="progress"></div></div>
-      <div class="scan-steps">
-        <div class="scan-step active" data-step="1"><b>01</b><span>Validasi URL</span></div>
-        <div class="scan-step" data-step="2"><b>02</b><span>Identifikasi platform</span></div>
-        <div class="scan-step" data-step="3"><b>03</b><span>Siapkan pencarian template</span></div>
-      </div>
-    </section>
+<section id="result" class="result hidden">
+  <div class="section-label">SEARCH RESULT</div>
+  <div class="source-card">
+    <div class="source-icon">✓</div>
+    <div>
+      <small>PLATFORM</small>
+      <h2 id="platform">—</h2>
+      <p id="sourceMessage">—</p>
+    </div>
+  </div>
 
-    <section id="result" class="result hidden">
-      <div class="section-label">ANALYSIS RESULT</div>
-      <div class="result-card">
-        <div class="result-icon">✓</div>
-        <div class="result-main">
-          <p class="muted">Platform terdeteksi</p>
-          <h2 id="platform">—</h2>
-          <p id="message" class="result-message">—</p>
-          <div class="chips">
-            <span id="templateStatus">READY FOR STAGE 3</span>
-            <span id="videoHost">—</span>
-          </div>
-        </div>
-      </div>
-      <div class="notice">
-        <strong>Stage 2 aktif.</strong>
-        Backend sekarang menerima URL melalui <code>/api/analyze</code>.
-        Pencarian template asli akan dihubungkan pada Stage 3 menggunakan sumber/API yang diizinkan.
-      </div>
-    </section>
+  <div class="query-card">
+    <small>GENERATED SEARCH QUERY</small>
+    <div id="query" class="query">—</div>
+    <button id="copyQuery">Copy Query</button>
+  </div>
 
-    <section id="how" class="how">
-      <div class="section-label">HOW IT WORKS</div>
-      <div class="how-grid">
-        <article><b>01</b><h3>Masukkan link</h3><p>Tempel URL video yang ingin dianalisis.</p></article>
-        <article><b>02</b><h3>Backend memproses</h3><p>Serverless function memvalidasi URL dan mengenali platform.</p></article>
-        <article><b>03</b><h3>Template ditemukan</h3><p>Stage berikutnya akan menambahkan mesin pencarian template.</p></article>
-      </div>
-    </section>
-  </main>
+  <div class="candidate-grid" id="candidates"></div>
 
-  <footer>TemplateFinder © 2026 — Stage 2 Backend</footer>
-  <script src="script.js"></script>
+  <div class="notice">
+    <strong>Catatan Stage 3:</strong> sistem ini membuat kandidat pencarian berdasarkan URL dan
+    metadata yang tersedia. Untuk pencocokan video-ke-template secara otomatis, Stage 4 akan
+    menambahkan analisis visual/audio dan koneksi ke provider template yang memiliki API/akses yang sah.
+  </div>
+</section>
+
+<section id="how" class="how">
+  <div class="section-label">STAGE 3</div>
+  <div class="how-grid">
+    <article><b>01</b><h3>Detect</h3><p>Mengenali platform dan ID video dari URL.</p></article>
+    <article><b>02</b><h3>Query</h3><p>Membangun kata kunci pencarian template secara otomatis.</p></article>
+    <article><b>03</b><h3>Candidate</h3><p>Menampilkan jalur pencarian dan kandidat yang bisa diverifikasi.</p></article>
+  </div>
+</section>
+</main>
+
+<footer>TemplateFinder © 2026 — Stage 3</footer>
+<script src="script.js"></script>
 </body>
 </html>
