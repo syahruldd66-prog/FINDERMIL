@@ -1,9 +1,66 @@
-const $=id=>document.getElementById(id);
-const url=$('url'),find=$('find'),scanner=$('scanner'),results=$('results'),bar=$('bar'),pct=$('pct'),toast=$('toast');
-function msg(t){toast.textContent=t;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2400)}
-function platform(v){v=v.toLowerCase();if(v.includes('tiktok.com'))return'TikTok';if(v.includes('instagram.com'))return'Instagram';if(v.includes('youtube.com')||v.includes('youtu.be'))return'YouTube';if(v.includes('facebook.com')||v.includes('fb.watch'))return'Facebook';if(v.includes('x.com')||v.includes('twitter.com'))return'X';return'Social Media'}
-function valid(v){try{return['http:','https:'].includes(new URL(v).protocol)}catch{return false}}
-function steps(n){for(let i=1;i<=4;i++){let e=$('s'+i);e.classList.toggle('active',i<=n)}}
-find.onclick=()=>{let v=url.value.trim();if(!v)return msg('Tempel link video terlebih dahulu.');if(!valid(v))return msg('Format link belum valid.');find.disabled=true;find.textContent='Menganalisis...';scanner.classList.remove('hidden');results.classList.add('hidden');let p=0;steps(1);bar.style.width='0%';pct.textContent='0%';scanner.scrollIntoView({behavior:'smooth',block:'center'});let timer=setInterval(()=>{p=Math.min(100,p+Math.floor(Math.random()*9)+6);bar.style.width=p+'%';pct.textContent=p+'%';if(p>=25)steps(1);if(p>=48)steps(2);if(p>=72)steps(3);if(p>=90)steps(4);if(p===100){clearInterval(timer);setTimeout(()=>show(v),450)}},150);setTimeout(()=>{find.disabled=false;find.textContent='⌕  Cari Template'},2600)}
-function show(v){let pl=platform(v);$('platform').textContent=pl.toUpperCase();$('name').textContent=pl==='TikTok'?'Trending Beat Motion':pl==='Instagram'?'Reels Cinematic Edit':'Cinematic Beat Edit';$('tpl').textContent=pl==='TikTok'||pl==='Instagram'?'CapCut':'Template DB';$('score').textContent=(88+Math.floor(Math.random()*9))+'%';results.classList.remove('hidden');results.scrollIntoView({behavior:'smooth'})}
-$('clear').onclick=()=>{url.value='';url.focus()};url.onkeydown=e=>{if(e.key==='Enter')find.click()};$('use').onclick=()=>msg('Link template akan tersedia setelah backend/API tahap 2 ditambahkan.');
+const form = document.getElementById("finderForm");
+const input = document.getElementById("videoUrl");
+const button = document.getElementById("findBtn");
+const error = document.getElementById("error");
+const scanner = document.getElementById("scanner");
+const result = document.getElementById("result");
+const progress = document.getElementById("progress");
+const platformEl = document.getElementById("platform");
+const messageEl = document.getElementById("message");
+const statusEl = document.getElementById("templateStatus");
+const hostEl = document.getElementById("videoHost");
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function setStep(n) {
+  document.querySelectorAll(".scan-step").forEach(el => {
+    el.classList.toggle("active", Number(el.dataset.step) <= n);
+  });
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  error.textContent = "";
+  result.classList.add("hidden");
+
+  const url = input.value.trim();
+  try { new URL(url); }
+  catch { error.textContent = "Masukkan URL video yang valid."; return; }
+
+  button.disabled = true;
+  scanner.classList.remove("hidden");
+  progress.style.width = "15%";
+  setStep(1);
+  await sleep(450);
+
+  progress.style.width = "48%";
+  setStep(2);
+  await sleep(500);
+
+  progress.style.width = "75%";
+  setStep(3);
+
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ url })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Server error");
+
+    progress.style.width = "100%";
+    await sleep(350);
+
+    platformEl.textContent = data.platform;
+    messageEl.textContent = data.message;
+    statusEl.textContent = data.templateSearch.status;
+    hostEl.textContent = data.host;
+    result.classList.remove("hidden");
+    result.scrollIntoView({behavior:"smooth", block:"center"});
+  } catch (err) {
+    error.textContent = err.message || "Gagal menghubungi backend.";
+  } finally {
+    button.disabled = false;
+  }
+});
